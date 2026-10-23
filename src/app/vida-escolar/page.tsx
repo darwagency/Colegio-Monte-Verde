@@ -11,55 +11,75 @@ import {
     Dribbble,
     ImageIcon,
     Download,
-    GraduationCap,
+    BookOpen,
+    Brain,
 } from "lucide-react";
 import WorkshopModal from "@/components/WorkshopModal";
 
 const workshops = [
     {
-        title: "Ajedrez",
-        schedule: "Martes, 16:30 - 17:30",
-        levels: "Pre-kinder a 8° Básico",
-        bgColor: "bg-institutional",
-        textColor: "text-white",
-        iconName: "crown",
-        Icon: Crown,
-    },
-    {
         title: "Fútbol",
-        schedule: "Miércoles, 16:30 - 17:30",
-        levels: "Kinder a 3° Básico",
+        sessions: [
+            "Martes · 5° a 8° básico",
+            "Miércoles · 1° a 4° básico",
+        ],
+        audience: "Estudiantes de 1° a 8° básico",
         bgColor: "bg-institutional",
         textColor: "text-white",
         iconName: "trophy",
         Icon: Trophy,
     },
     {
+        title: "Básquetbol",
+        sessions: [
+            "Martes · 5° y 6° básico",
+            "Viernes · 1° y 2° básico",
+            "Viernes · Grupo 2: 3° y 4° básico",
+        ],
+        audience: "Estudiantes de 1° a 6° básico",
+        bgColor: "bg-institutional",
+        textColor: "text-white",
+        iconName: "dribbble",
+        Icon: Dribbble,
+    },
+    {
+        title: "Ajedrez",
+        sessions: ["Viernes · 1° a 8° básico"],
+        audience: "Estudiantes de 1° a 8° básico",
+        bgColor: "bg-institutional",
+        textColor: "text-white",
+        iconName: "crown",
+        Icon: Crown,
+    },
+    {
+        title: "Inglés",
+        sessions: [
+            "Lunes · 6° a 8° básico",
+            "Miércoles · 3° a 5° básico",
+        ],
+        audience: "Estudiantes de 3° a 8° básico",
+        bgColor: "bg-institutional",
+        textColor: "text-white",
+        iconName: "book-open",
+        Icon: BookOpen,
+    },
+    {
+        title: "Taller de Altas Capacidades",
+        sessions: ["Martes y miércoles"],
+        audience: "Estudiantes identificados",
+        bgColor: "bg-institutional",
+        textColor: "text-white",
+        iconName: "brain",
+        Icon: Brain,
+    },
+    {
         title: "Instrumental",
-        schedule: "Jueves, 16:15 - 17:00",
-        levels: "5° a 8° Básico",
+        sessions: ["Jueves · 1° a 8° básico"],
+        audience: "Estudiantes de 1° a 8° básico",
         bgColor: "bg-institutional",
         textColor: "text-white",
         iconName: "guitar",
         Icon: Guitar,
-    },
-    {
-        title: "Básquetbol (G1)",
-        schedule: "Viernes, 14:00 - 15:00",
-        levels: "1° y 2° Básico",
-        bgColor: "bg-institutional",
-        textColor: "text-white",
-        iconName: "dribbble",
-        Icon: Dribbble,
-    },
-    {
-        title: "Básquetbol (G2)",
-        schedule: "Viernes, 15:30 - 17:30",
-        levels: "3° a 6° Básico",
-        bgColor: "bg-institutional",
-        textColor: "text-white",
-        iconName: "dribbble",
-        Icon: Dribbble,
     },
 ];
 
@@ -97,8 +117,13 @@ export default function VidaEscolarPage() {
                             <h4 className="font-bold text-gray-800 group-hover:text-[var(--accent)]">
                                 {w.title}
                             </h4>
-                            <p className="text-xs text-gray-500 mt-1">
-                                {w.levels}
+                            <ul className="text-xs text-gray-500 mt-2 space-y-1">
+                                {w.sessions.map((session) => (
+                                    <li key={session}>{session}</li>
+                                ))}
+                            </ul>
+                            <p className="text-[11px] text-gray-400 mt-2">
+                                {w.audience}
                             </p>
                         </div>
                     ))}
@@ -172,8 +197,8 @@ export default function VidaEscolarPage() {
                     isOpen={!!modal}
                     onClose={() => setModal(null)}
                     title={modal.title}
-                    schedule={modal.schedule}
-                    levels={modal.levels}
+                    sessions={modal.sessions}
+                    audience={modal.audience}
                     bgColor={modal.bgColor}
                     textColor={modal.textColor}
                     iconName={modal.iconName}

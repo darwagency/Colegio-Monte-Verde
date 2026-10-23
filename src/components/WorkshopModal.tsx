@@ -7,8 +7,8 @@ interface WorkshopModalProps {
     isOpen: boolean;
     onClose: () => void;
     title: string;
-    schedule: string;
-    levels: string;
+    sessions: string[];
+    audience: string;
     bgColor: string;
     textColor: string;
     iconName: string;
@@ -18,8 +18,8 @@ export default function WorkshopModal({
     isOpen,
     onClose,
     title,
-    schedule,
-    levels,
+    sessions,
+    audience,
     bgColor,
     textColor,
     iconName,
@@ -70,22 +70,26 @@ export default function WorkshopModal({
                         {title}
                     </h3>
                     <div className="space-y-4 mb-8">
-                        <div className="flex items-center gap-3 text-gray-600">
-                            <Clock className="theme-text-accent w-5 h-5 flex-shrink-0" />
+                        <div className="flex items-start gap-3 text-gray-600">
+                            <Clock className="theme-text-accent w-5 h-5 flex-shrink-0 mt-0.5" />
                             <div>
                                 <span className="text-xs font-bold uppercase text-gray-400 block">
-                                    Horario
+                                    Días y cursos
                                 </span>
-                                <span className="font-medium">{schedule}</span>
+                                <ul className="mt-1 space-y-1 font-medium">
+                                    {sessions.map((session) => (
+                                        <li key={session}>{session}</li>
+                                    ))}
+                                </ul>
                             </div>
                         </div>
-                        <div className="flex items-center gap-3 text-gray-600">
-                            <GraduationCap className="theme-text-accent w-5 h-5 flex-shrink-0" />
+                        <div className="flex items-start gap-3 text-gray-600">
+                            <GraduationCap className="theme-text-accent w-5 h-5 flex-shrink-0 mt-0.5" />
                             <div>
                                 <span className="text-xs font-bold uppercase text-gray-400 block">
-                                    Niveles
+                                    Dirigido a
                                 </span>
-                                <span className="font-medium">{levels}</span>
+                                <span className="font-medium">{audience}</span>
                             </div>
                         </div>
                     </div>
