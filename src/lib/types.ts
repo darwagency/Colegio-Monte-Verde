@@ -1,21 +1,21 @@
-/**
- * Tipos para el sistema de noticias del CMS (Google Sheets CSV).
- */
+/** Contenido de una noticia publicada en el sitio. */
 export interface Noticia {
-    /** Slug generado a partir del título (URL-friendly) */
     slug: string;
-    /** Título de la noticia */
     titulo: string;
-    /** Fecha de publicación (formato legible, ej. "01/03/2026") */
+    /** Fecha legible, por ejemplo 04/03/2026 o 01-09-2026. */
     fecha: string;
-    /** Cuerpo/contenido de la noticia */
     contenido: string;
-    /** URL de la imagen principal (se muestra al inicio del artículo) */
+    /** Rutas locales dentro de public/noticias/. */
     imagenInicio: string;
-    /** URL de la imagen secundaria (se muestra al final del artículo) */
     imagenFinal: string;
-    /** URL del botón de acción personalizado (opcional) */
     botonLink: string;
-    /** Texto del botón de acción personalizado (opcional) */
     botonTexto: string;
+    /** URL del video cuando la noticia incluye un reproductor. */
+    videoUrl?: string;
+}
+
+export interface HeroConfig {
+    image: string;
+    filterColor: string;
+    filterActive: boolean;
 }

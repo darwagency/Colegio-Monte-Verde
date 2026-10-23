@@ -1,154 +1,44 @@
-import Papa from "papaparse";
-import type { Noticia } from "./types";
+import { heroConfig, noticias } from "@/data/noticias";
+import type { HeroConfig, Noticia } from "@/lib/types";
 
-/**
- * Genera un slug URL-friendly a partir de un texto.
- * Ejemplo: "Día del Estudiante 2026" → "dia-del-estudiante-2026"
- */
-function slugify(text: string): string {
-    return text
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "") // eliminar acentos
-        .replace(/[^a-z0-9\s-]/g, "") // solo alfanuméricos, espacios y guiones
-        .trim()
-        .replace(/\s+/g, "-") // espacios → guiones
-        .replace(/-+/g, "-"); // múltiples guiones → uno
-}
+function getTimestamp(fecha: string): number | null {
+    const match = fecha.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$/);
+    if (!match) return null;
 
-/**
- * Interfaz que representa una fila raw del CSV de Google Sheets.
- * Los nombres de columna deben coincidir con los encabezados del Sheet.
- */
-interface SheetRow {
-    Titulo?: string;
-    Fecha?: string;
-    Contenido?: string;
-    Imagen_Inicio?: string;
-    Imagen_Final?: string;
-    Slug?: string;
-    Imagen_Hero?: string;
-    Boton_Link?: string;
-    Boton_Texto?: string;
-    Hero_Filtro_Color?: string;
-    Hero_Filtro_Activo?: string;
-}
+    const [, dayText, monthText, yearText] = match;
+    const day = Number(dayText);
+    const month = Number(monthText);
+    const year = Number(yearText);
+    const date = new Date(Date.UTC(year, month - 1, day));
 
-/** Configuración del hero extraída del Sheet */
-export interface HeroConfig {
-    image: string;
-    filterColor: string;
-    filterActive: boolean;
-}
-
-/** Resultado de parsear el Sheet completo */
-interface SheetData {
-    noticias: Noticia[];
-    heroConfig: HeroConfig;
-}
-
-/**
- * Función interna que hace fetch y parsea todo el Sheet.
- * Retorna tanto las noticias como la imagen hero.
- */
-async function fetchSheetData(): Promise<SheetData> {
-    const csvUrl = process.env.GOOGLE_SHEETS_CSV_URL;
-
-    if (!csvUrl) {
-        console.warn(
-            "[noticias] GOOGLE_SHEETS_CSV_URL no está configurada en las variables de entorno."
-        );
-        return { noticias: [], heroConfig: { image: "", filterColor: "", filterActive: true } };
+    if (
+        date.getUTCFullYear() !== year ||
+        date.getUTCMonth() !== month - 1 ||
+        date.getUTCDate() !== day
+    ) {
+        return null;
     }
 
-    try {
-        const response = await fetch(csvUrl, { next: { revalidate: 3600 } });
-
-        if (!response.ok) {
-            console.error(
-                `[noticias] Error al obtener CSV: ${response.status} ${response.statusText}`
-            );
-            return { noticias: [], heroConfig: { image: "", filterColor: "", filterActive: true } };
-        }
-
-        const csvText = await response.text();
-
-        const parsed = Papa.parse<SheetRow>(csvText, {
-            header: true,
-            skipEmptyLines: true,
-            transformHeader: (header: string) => header.trim(),
-        });
-
-        if (parsed.errors.length > 0) {
-            console.warn("[noticias] Errores de parseo CSV:", parsed.errors);
-        }
-
-        // Extraer configuración del hero (primer valor no vacío de cada columna)
-        const heroRow = parsed.data.find(
-            (row) => row.Imagen_Hero && row.Imagen_Hero.trim() !== ""
-        );
-        const heroImage = heroRow?.Imagen_Hero?.trim() || "";
-
-        // Filtro del hero
-        const filtroColorRow = parsed.data.find(
-            (row) => row.Hero_Filtro_Color && row.Hero_Filtro_Color.trim() !== ""
-        );
-        const filterColor = filtroColorRow?.Hero_Filtro_Color?.trim() || "";
-
-        const filtroActivoRow = parsed.data.find(
-            (row) => row.Hero_Filtro_Activo && row.Hero_Filtro_Activo.trim() !== ""
-        );
-        const filtroActivoVal = filtroActivoRow?.Hero_Filtro_Activo?.trim().toLowerCase() || "";
-        // Por defecto activo, solo se desactiva con "no" o "false"
-        const filterActive = filtroActivoVal !== "no" && filtroActivoVal !== "false";
-
-        const heroConfig: HeroConfig = { image: heroImage, filterColor, filterActive };
-
-        // Extraer noticias
-        const noticias: Noticia[] = parsed.data
-            .filter((row) => row.Titulo && row.Titulo.trim() !== "")
-            .map((row) => ({
-                slug: row.Slug?.trim() || slugify(row.Titulo || ""),
-                titulo: row.Titulo?.trim() || "",
-                fecha: row.Fecha?.trim() || "",
-                contenido: row.Contenido?.trim() || "",
-                imagenInicio: row.Imagen_Inicio?.trim() || "",
-                imagenFinal: row.Imagen_Final?.trim() || "",
-                botonLink: row.Boton_Link?.trim() || "",
-                botonTexto: row.Boton_Texto?.trim() || "",
-            }));
-
-        return { noticias, heroConfig };
-    } catch (error) {
-        console.error("[noticias] Error al obtener o parsear noticias:", error);
-        return { noticias: [], heroConfig: { image: "", filterColor: "", filterActive: true } };
-    }
+    return date.getTime();
 }
 
-/**
- * Obtiene todas las noticias del Google Sheet.
- */
-export async function fetchNoticias(): Promise<Noticia[]> {
-    const { noticias } = await fetchSheetData();
-    return noticias;
+/** Devuelve las noticias más nuevas primero; las que no tienen fecha quedan al final. */
+export function getNoticias(): Noticia[] {
+    return noticias
+        .map((noticia, index) => ({ noticia, index, timestamp: getTimestamp(noticia.fecha) }))
+        .sort((a, b) => {
+            if (a.timestamp === null && b.timestamp === null) return a.index - b.index;
+            if (a.timestamp === null) return 1;
+            if (b.timestamp === null) return -1;
+            return b.timestamp - a.timestamp || a.index - b.index;
+        })
+        .map(({ noticia }) => noticia);
 }
 
-/**
- * Obtiene una noticia individual por su slug.
- * Retorna undefined si no se encuentra.
- */
-export async function getNoticiaBySlug(
-    slug: string
-): Promise<Noticia | undefined> {
-    const noticias = await fetchNoticias();
-    return noticias.find((n) => n.slug === slug);
+export function getNoticiaBySlug(slug: string): Noticia | undefined {
+    return noticias.find((noticia) => noticia.slug === slug);
 }
 
-/**
- * Obtiene la configuración del hero desde el Google Sheet.
- * Incluye imagen, color del filtro y estado activo/inactivo.
- */
-export async function fetchHeroConfig(): Promise<HeroConfig> {
-    const { heroConfig } = await fetchSheetData();
-    return heroConfig;
+export function getHeroConfig(): HeroConfig {
+    return { ...heroConfig };
 }

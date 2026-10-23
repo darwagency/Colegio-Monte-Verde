@@ -2,49 +2,44 @@ import { isVideoUrl, toEmbedUrl, getVideoThumbnailUrl } from "@/lib/mediaUtils";
 import { Newspaper, Play } from "lucide-react";
 
 interface MediaEmbedProps {
-    /** URL de la imagen o video */
+    /** Ruta local de la imagen o URL de video. */
     src: string;
-    /** Texto alternativo para imágenes */
+    /** URL opcional del video asociado a una miniatura local. */
+    videoUrl?: string;
+    /** Texto alternativo para imágenes. */
     alt: string;
-    /** Variante de presentación */
+    /** Variante de presentación. */
     variant: "card" | "detail";
-    /** Prioridad de carga (eager para above-the-fold) */
+    /** Prioridad de carga. */
     loading?: "lazy" | "eager";
-    /** Clases extra para el contenedor */
+    /** Clases extra para el contenedor. */
     className?: string;
 }
 
-/**
- * Componente reutilizable que renderiza una imagen o un video embed
- * según la URL proporcionada. Detecta automáticamente URLs de Vimeo/YouTube.
- *
- * - variant="card": muestra una miniatura estática con ícono de play (para tarjetas)
- * - variant="detail": muestra el iframe embed completo (para página de detalle)
- */
+/** Renderiza una imagen local o el reproductor de un video. */
 export default function MediaEmbed({
     src,
+    videoUrl,
     alt,
     variant,
     loading = "lazy",
     className = "",
 }: MediaEmbedProps) {
-    // Sin fuente → placeholder
-    if (!src) {
+    const videoSource = videoUrl || (isVideoUrl(src) ? src : "");
+
+    if (!src && !videoSource) {
         return (
             <div
-                className={`${variant === "card" ? "aspect-[16/10]" : "aspect-video"
-                    } bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center ${className}`}
+                className={`${variant === "card" ? "aspect-[16/10]" : "aspect-video"} bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center ${className}`}
             >
                 <Newspaper className="w-12 h-12 text-gray-200" />
             </div>
         );
     }
 
-    // Video
-    if (isVideoUrl(src)) {
-        // Card variant → miniatura estática + ícono de play
+    if (videoSource) {
         if (variant === "card") {
-            const thumbnailUrl = getVideoThumbnailUrl(src);
+            const thumbnailUrl = src && !isVideoUrl(src) ? src : getVideoThumbnailUrl(videoSource);
 
             return (
                 <div className={`relative aspect-[16/10] overflow-hidden bg-gray-900 ${className}`}>
@@ -56,7 +51,6 @@ export default function MediaEmbed({
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100"
                         />
                     )}
-                    {/* Play overlay */}
                     <div className="absolute inset-0 flex items-center justify-center">
                         <div className="w-14 h-14 rounded-full bg-white/90 shadow-lg flex items-center justify-center group-hover:bg-white group-hover:scale-110 transition-all duration-300">
                             <Play className="w-6 h-6 text-gray-800 ml-0.5" fill="currentColor" />
@@ -66,13 +60,11 @@ export default function MediaEmbed({
             );
         }
 
-        // Detail variant → iframe embed completo
-        const embedUrl = toEmbedUrl(src);
         return (
             <div className={`mb-8 md:mb-10 rounded-2xl overflow-hidden shadow-lg ${className}`}>
                 <div className="relative aspect-video bg-black">
                     <iframe
-                        src={embedUrl}
+                        src={toEmbedUrl(videoSource)}
                         title={alt}
                         className="w-full h-full"
                         allow="autoplay; fullscreen; picture-in-picture"
@@ -84,7 +76,6 @@ export default function MediaEmbed({
         );
     }
 
-    // Imagen card
     if (variant === "card") {
         return (
             <div className={`relative aspect-[16/10] overflow-hidden bg-gray-100 ${className}`}>
@@ -98,7 +89,6 @@ export default function MediaEmbed({
         );
     }
 
-    // Imagen detail
     return (
         <div className={`mb-8 md:mb-10 rounded-2xl overflow-hidden shadow-lg ${className}`}>
             <img
@@ -110,4 +100,3 @@ export default function MediaEmbed({
         </div>
     );
 }
-

@@ -6,7 +6,6 @@ import {
     Utensils,
     Shirt,
     Trophy,
-    Music,
     Crown,
     Guitar,
     Dribbble,
@@ -34,15 +33,6 @@ const workshops = [
         textColor: "text-white",
         iconName: "trophy",
         Icon: Trophy,
-    },
-    {
-        title: "Coro",
-        schedule: "Miércoles, 16:15 - 17:00",
-        levels: "3° a 8° Básico",
-        bgColor: "bg-institutional",
-        textColor: "text-white",
-        iconName: "music",
-        Icon: Music,
     },
     {
         title: "Instrumental",
@@ -141,10 +131,10 @@ export default function VidaEscolarPage() {
                     </div>
                 </div>
 
-                {/* Uniforme Escolar */}
+                {/* Buzo y polera institucional colegio Monteverde */}
                 <div>
                     <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2 border-b pb-2">
-                        <Shirt className="text-institutional" /> Uniforme Escolar
+                        <Shirt className="text-institutional" /> Buzo y polera institucional colegio Monteverde
                     </h3>
                     <div className="bg-white p-6 rounded-xl shadow border border-gray-100">
                         <ul className="space-y-4 text-sm text-gray-700">
@@ -172,10 +162,6 @@ export default function VidaEscolarPage() {
                                 </div>
                             </li>
                         </ul>
-                        <div className="mt-4 p-3 bg-gray-50 rounded-lg text-xs text-center text-gray-500">
-                            Proveedor Oficial: &quot;Confecciones
-                            Chiloé&quot; (Calle Blanco 123, Castro).
-                        </div>
                     </div>
                 </div>
             </div>

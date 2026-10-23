@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { BookOpen, Video, Facebook, ExternalLink } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
-import type { HeroConfig } from "@/lib/noticias";
+import type { HeroConfig } from "@/lib/types";
 
 export default function HeroAndResources({
     heroConfig,
@@ -11,7 +11,7 @@ export default function HeroAndResources({
     heroConfig?: HeroConfig;
 }) {
     const { themeData } = useTheme();
-    const bannerSrc = "/Hero-Monte-Verde.png";
+    const bannerSrc = heroConfig?.image || "/Hero-Monte-Verde.png";
     const filterActive = heroConfig?.filterActive ?? true;
     const filterColor = heroConfig?.filterColor || "";
 

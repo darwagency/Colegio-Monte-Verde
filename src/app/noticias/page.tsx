@@ -1,9 +1,8 @@
 import Link from "next/link";
-import { fetchNoticias } from "@/lib/noticias";
+import { getNoticias } from "@/lib/noticias";
 import { Calendar, Newspaper, ArrowRight } from "lucide-react";
 import MediaEmbed from "@/components/MediaEmbed";
 
-export const revalidate = 3600; // ISR: regenerar cada 1 hora
 
 export const metadata = {
     title: "Noticias — Colegio Monte Verde",
@@ -11,8 +10,8 @@ export const metadata = {
         "Últimas noticias y novedades del Colegio Monte Verde, Castro, Chiloé.",
 };
 
-export default async function NoticiasPage() {
-    const noticias = await fetchNoticias();
+export default function NoticiasPage() {
+    const noticias = getNoticias();
 
     return (
         <div className="min-h-screen">
@@ -60,6 +59,7 @@ export default async function NoticiasPage() {
                                 {/* Imagen o Video miniatura */}
                                 <MediaEmbed
                                     src={noticia.imagenInicio}
+                                    videoUrl={noticia.videoUrl}
                                     alt={noticia.titulo}
                                     variant="card"
                                 />

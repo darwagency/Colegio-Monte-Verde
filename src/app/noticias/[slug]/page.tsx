@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { fetchNoticias, getNoticiaBySlug } from "@/lib/noticias";
+import { getNoticias, getNoticiaBySlug } from "@/lib/noticias";
 import {
     Calendar,
     ChevronRight,
@@ -12,14 +12,12 @@ import {
 import MediaEmbed from "@/components/MediaEmbed";
 import type { Metadata } from "next";
 
-export const revalidate = 3600; // ISR: regenerar cada 1 hora
-export const dynamicParams = true; // Permitir slugs no pre-renderizados (se generan on-demand)
+export const dynamicParams = false;
 
 /* ---------- Generación estática de parámetros ---------- */
 
-export async function generateStaticParams() {
-    const noticias = await fetchNoticias();
-    return noticias.map((n) => ({ slug: n.slug }));
+export function generateStaticParams() {
+    return getNoticias().map((noticia) => ({ slug: noticia.slug }));
 }
 
 /* ---------- SEO dinámico ---------- */
@@ -30,7 +28,7 @@ export async function generateMetadata({
     params,
 }: PageProps): Promise<Metadata> {
     const { slug } = await params;
-    const noticia = await getNoticiaBySlug(slug);
+    const noticia = getNoticiaBySlug(slug);
 
     if (!noticia) {
         return { title: "Noticia no encontrada — Colegio Monte Verde" };
@@ -46,7 +44,7 @@ export async function generateMetadata({
 
 export default async function NoticiaDetailPage({ params }: PageProps) {
     const { slug } = await params;
-    const noticia = await getNoticiaBySlug(slug);
+    const noticia = getNoticiaBySlug(slug);
 
     if (!noticia) {
         notFound();
@@ -97,9 +95,10 @@ export default async function NoticiaDetailPage({ params }: PageProps) {
                 </header>
 
                 {/* Imagen o Video de inicio */}
-                {noticia.imagenInicio && (
+                {(noticia.imagenInicio || noticia.videoUrl) && (
                     <MediaEmbed
                         src={noticia.imagenInicio}
+                        videoUrl={noticia.videoUrl}
                         alt={noticia.titulo}
                         variant="detail"
                         loading="eager"
@@ -120,7 +119,7 @@ export default async function NoticiaDetailPage({ params }: PageProps) {
                     />
                 )}
 
-                {/* Botón de acción personalizado (desde el Sheet) */}
+                {/* Botón de acción opcional definido en los datos de la noticia */}
                 {noticia.botonLink && noticia.botonTexto && (
                     <div className="mb-10 md:mb-12 flex justify-center">
                         <a

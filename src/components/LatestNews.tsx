@@ -1,14 +1,11 @@
 import Link from "next/link";
-import { fetchNoticias } from "@/lib/noticias";
+import { getNoticias } from "@/lib/noticias";
 import { Calendar, ArrowRight } from "lucide-react";
 import MediaEmbed from "@/components/MediaEmbed";
 
-/**
- * Server component that fetches and displays the latest 3 news articles.
- * Designed to be embedded in the homepage.
- */
-export default async function LatestNews() {
-    const noticias = await fetchNoticias();
+/** Sección reutilizable con las tres noticias más recientes. */
+export default function LatestNews() {
+    const noticias = getNoticias();
     const latest = noticias.slice(0, 3);
 
     if (latest.length === 0) return null;
@@ -16,7 +13,6 @@ export default async function LatestNews() {
     return (
         <section className="py-16 md:py-20 px-4 bg-white">
             <div className="max-w-6xl mx-auto">
-                {/* Encabezado */}
                 <div className="text-center mb-12">
                     <span className="theme-text-accent font-semibold tracking-wider text-sm uppercase">
                         Comunidad al Día
@@ -30,7 +26,6 @@ export default async function LatestNews() {
                     </p>
                 </div>
 
-                {/* Grilla de noticias */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
                     {latest.map((noticia) => (
                         <Link
@@ -38,14 +33,13 @@ export default async function LatestNews() {
                             href={`/noticias/${noticia.slug}`}
                             className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col"
                         >
-                            {/* Imagen o Video */}
                             <MediaEmbed
                                 src={noticia.imagenInicio}
+                                videoUrl={noticia.videoUrl}
                                 alt={noticia.titulo}
                                 variant="card"
                             />
 
-                            {/* Contenido */}
                             <div className="p-5 md:p-6 flex flex-col flex-grow">
                                 {noticia.fecha && (
                                     <div className="flex items-center gap-1.5 text-xs text-gray-400 mb-3">
@@ -73,7 +67,6 @@ export default async function LatestNews() {
                     ))}
                 </div>
 
-                {/* Botón ver todas */}
                 {noticias.length > 3 && (
                     <div className="text-center mt-10">
                         <Link
