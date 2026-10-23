@@ -142,6 +142,26 @@ export const noticias: Noticia[] = [
         "imagenFinal": "",
         "botonLink": "",
         "botonTexto": ""
+    },
+    {
+        "slug": "estudiantes-de-3-y-7-basico-participan-en-taller-de-plantacion-de-papas-nativas",
+        "titulo": "Estudiantes de 3° y 7° básico participan en taller de plantación de papas nativas",
+        "fecha": "23/10/2026",
+        "contenido": "Estudiantes de 3° y 7° básico participaron en un Taller de Plantación de Papas Nativas realizado en el Parque Municipal de la comuna. La jornada se desarrolló como parte del Taller de Sustentabilidad del colegio.\n\nDurante la actividad, las y los estudiantes compartieron una instancia práctica en el huerto, conociendo y trabajando en torno al cultivo de papas nativas.\n\nLa experiencia acercó el aprendizaje sobre sustentabilidad al entorno natural y al trabajo con la tierra.",
+        "imagenInicio": "/noticias/n15-inicio.webp",
+        "imagenFinal": "/noticias/n15-final.webp",
+        "botonLink": "",
+        "botonTexto": ""
+    },
+    {
+        "slug": "estudiantes-de-octavo-basico-presentan-exposicion-por-el-dia-de-las-aves-playeras",
+        "titulo": "Estudiantes de octavo básico presentan exposición por el Día de las Aves Playeras",
+        "fecha": "23/10/2026",
+        "contenido": "Estudiantes de 8° básico prepararon y presentaron una exposición por el Día de las Aves Playeras, dirigida a niños y niñas de preescolar y primer ciclo.\n\nA través de maquetas, los grupos mostraron aves playeras y aspectos de los ambientes donde viven. Los estudiantes visitantes recorrieron la muestra y conocieron el trabajo realizado por sus compañeros mayores.\n\nLa actividad promovió el aprendizaje entre distintos niveles y acercó a la comunidad escolar al conocimiento y valoración de las aves playeras.",
+        "imagenInicio": "/noticias/n16-inicio.webp",
+        "imagenFinal": "/noticias/n16-final.webp",
+        "botonLink": "",
+        "botonTexto": ""
     }
 ];
 
